@@ -73,7 +73,7 @@ namespace JwtAuthAspNet7WebAPI.Controllers
                 }
                 return BadRequest(errorString);
             }
-            
+
             // Add a Default USER Role to all users
             await _userManager.AddToRoleAsync(newUser, StaticUserRoles.USER);
 
@@ -93,7 +93,7 @@ namespace JwtAuthAspNet7WebAPI.Controllers
 
             var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-            if(!isPasswordCorrect)
+            if (!isPasswordCorrect)
                 return Unauthorized("Invalid Credentials");
 
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -112,7 +112,7 @@ namespace JwtAuthAspNet7WebAPI.Controllers
 
             var token = GenerateNewJsonWebToken(authClaims);
 
-            return Ok(token);   
+            return Ok(token);
         }
 
         private string GenerateNewJsonWebToken(List<Claim> claims)
@@ -130,6 +130,36 @@ namespace JwtAuthAspNet7WebAPI.Controllers
             string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
 
             return token;
+        }
+
+        // Route -> make user -> admin
+        [HttpPost]
+        [Route("make-admin")]
+        public async Task<IActionResult> MakeAdmin([FromBody] UpdatePermissionDto updatePermissionDto)
+        {
+            var user = await _userManager.FindByNameAsync(updatePermissionDto.UserName);
+
+            if (user is null)
+                return BadRequest("Invalid User name!!!!!!!!");
+
+            await _userManager.AddToRoleAsync(user, StaticUserRoles.ADMIN);
+
+            return Ok("User is now an ADMIN");
+        }
+
+        // Route -> make user -> owner
+        [HttpPost]
+        [Route("make-owner")]
+        public async Task<IActionResult> MakeOwner([FromBody] UpdatePermissionDto updatePermissionDto)
+        {
+            var user = await _userManager.FindByNameAsync(updatePermissionDto.UserName);
+
+            if (user is null)
+                return BadRequest("Invalid User name!!!!!!!!");
+
+            await _userManager.AddToRoleAsync(user, StaticUserRoles.OWNER);
+
+            return Ok("User is now an Owner");
         }
     }
 }
