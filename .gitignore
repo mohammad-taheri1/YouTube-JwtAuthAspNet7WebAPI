@@ -1,0 +1,12 @@
+.vs
+*.dll
+*.pdb
+*.cache
+bin
+*/bin
+**/bin
+**/debug
+**/obj
+*/data-mssql
+**/data-mssql
+*.user
