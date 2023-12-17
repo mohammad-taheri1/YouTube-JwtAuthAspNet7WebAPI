@@ -1,3 +1,8 @@
+---
+title: ASP.NET 7 Web API JWT Authentication and Role-Based Authorization
+last update: '2023-Dec-17'
+---
+
 # ASP.NET 7 Web API JWT Authentication and Role-Based Authorization
 
 ## What is this repository about?
@@ -35,6 +40,7 @@ In this repository, we create a new .Net 7 WebAPI project from scratch and imple
 - Pull request
 - Identity Package
 - Custom User fields
+- Add request headers to swagger
 
 💖 You can Buy me a coffee to support: https://www.buymeacoffee.com/DevEmpower 💖
 
