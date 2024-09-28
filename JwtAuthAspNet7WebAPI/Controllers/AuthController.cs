@@ -1,14 +1,6 @@
 ﻿using JwtAuthAspNet7WebAPI.Core.Dtos;
-using JwtAuthAspNet7WebAPI.Core.Entities;
 using JwtAuthAspNet7WebAPI.Core.Interfaces;
-using JwtAuthAspNet7WebAPI.Core.OtherObjects;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace JwtAuthAspNet7WebAPI.Controllers
 {
@@ -28,11 +20,13 @@ namespace JwtAuthAspNet7WebAPI.Controllers
         [Route("seed-roles")]
         public async Task<IActionResult> SeedRoles()
         {
-             var seerRoles = await _authService.SeedRolesAsync();
+             var result = await _authService.SeedRolesAsync();
 
-            return Ok(seerRoles);
+            if (!result.IsSucceed)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
         }
-
 
         // Route -> Register
         [HttpPost]
@@ -42,11 +36,10 @@ namespace JwtAuthAspNet7WebAPI.Controllers
             var registerResult = await _authService.RegisterAsync(registerDto);
 
             if (registerResult.IsSucceed)
-                return Ok(registerResult);
+                return Ok(registerResult.Message);
 
-            return BadRequest(registerResult);
+            return BadRequest(registerResult.Message);
         }
-
 
         // Route -> Login
         [HttpPost]
@@ -56,12 +49,10 @@ namespace JwtAuthAspNet7WebAPI.Controllers
             var loginResult = await _authService.LoginAsync(loginDto);
 
             if(loginResult.IsSucceed)
-                return Ok(loginResult);
+                return Ok(loginResult.Message);
 
-            return Unauthorized(loginResult);
+            return Unauthorized(loginResult.Message);
         }
-
-        
 
         // Route -> make user -> admin
         [HttpPost]
