@@ -1,9 +1,10 @@
-![GitHub last commit](https://img.shields.io/github/last-commit/mohammad-taheri1/YouTube-JwtAuthAspNet7WebAPI)
 
 ---
 title: ASP.NET 7 Web API JWT Authentication and Role-Based Authorization
 last update: '2024-Sep-28'
 ---
+
+![GitHub last commit](https://img.shields.io/github/last-commit/mohammad-taheri1/YouTube-JwtAuthAspNet7WebAPI)
 
 # ASP.NET 7 Web API JWT Authentication and Role-Based Authorization
 
