@@ -1,4 +1,3 @@
-
 ---
 title: ASP.NET 7 Web API JWT Authentication and Role-Based Authorization
 last update: '2024-Sep-28'
