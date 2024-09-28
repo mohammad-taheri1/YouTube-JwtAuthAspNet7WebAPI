@@ -5,20 +5,13 @@
 namespace JwtAuthAspNet7WebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class updateuserentity : Migration
+    public partial class UpdateUserEntity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "FirstName",
-                table: "AspNetUsers",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "LastName",
+                name: "Mobile",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
                 nullable: false,
@@ -29,11 +22,7 @@ namespace JwtAuthAspNet7WebAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "FirstName",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "LastName",
+                name: "Mobile",
                 table: "AspNetUsers");
         }
     }

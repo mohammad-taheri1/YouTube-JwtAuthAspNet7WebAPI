@@ -1,5 +1,7 @@
 using JwtAuthAspNet7WebAPI.Core.DbContext;
 using JwtAuthAspNet7WebAPI.Core.Entities;
+using JwtAuthAspNet7WebAPI.Core.Identity.Factories;
+using JwtAuthAspNet7WebAPI.Core.Identity.Stores;
 using JwtAuthAspNet7WebAPI.Core.Interfaces;
 using JwtAuthAspNet7WebAPI.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,35 +15,65 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
- 
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add DB
+#region Add AddDbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("local");
     options.UseSqlServer(connectionString);
 });
+#endregion
 
-// Add Identity
+#region Add Identity (Old)
+//builder.Services
+//    .AddIdentity<ApplicationUser, ApplicationRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();
+#endregion
+
+#region Config Identity (Old)
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    options.Password.RequiredLength = 3;
+//    options.Password.RequireDigit = false;
+//    options.Password.RequireLowercase= false;
+//    options.Password.RequireUppercase= false;
+//    options.Password.RequireNonAlphanumeric= false;
+//    options.SignIn.RequireConfirmedEmail = false;
+//});
+#endregion
+
+#region A better Solution For Add and Config IDentity
+
 builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>()
+    .AddIdentity<ApplicationUser, ApplicationRole>(options =>
+    {
+        options.Stores.ProtectPersonalData = false;
+
+        options.Password.RequireDigit = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredUniqueChars = 0;
+
+        options.SignIn.RequireConfirmedAccount = false;
+        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedPhoneNumber = false;
+    })
+    .AddUserStore<ApplicationUserStore>()
+    .AddRoleStore<ApplicationRoleStore>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddClaimsPrincipalFactory<ApplicationClaimPrincipalFactory>();
 
+builder.Services.AddScoped<IUserStore<ApplicationUser>, ApplicationUserStore>();
+builder.Services.AddScoped<IRoleStore<ApplicationRole>, ApplicationRoleStore>();
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationClaimPrincipalFactory>();
 
-// Config Identity
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequiredLength = 3;
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase= false;
-    options.Password.RequireUppercase= false;
-    options.Password.RequireNonAlphanumeric= false;
-    options.SignIn.RequireConfirmedEmail = false;
-});
-
+#endregion
 
 // Add Authentication and JwtBearer
 builder.Services
@@ -54,7 +86,7 @@ builder.Services
     .AddJwtBearer(options =>
     {
         options.SaveToken = true;
-        options.RequireHttpsMetadata= false;
+        options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuer = true,
@@ -64,9 +96,6 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
         };
     });
-
-
-
 
 // Inject app Dependencies (Dependency Injection)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -101,15 +130,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
-
-
-
-
 // pipeline
 var app = builder.Build();
 
- 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
